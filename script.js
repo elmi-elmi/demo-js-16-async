@@ -150,4 +150,32 @@ const getCountryData = function (country) {
 //     });
 // };
 
-getCountryData("iran");
+// getCountryData("iran");
+
+
+
+
+const whereAmI = function(lat, lng){
+    return fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
+        .then(res=> {
+            console.log(res)
+            if(res.status === 403) throw new Error(`Too many request pedasag, ${res.status}  .`)
+            return res.json()
+        })
+        .then(data=> {
+            console.log(data)
+            console.log(`You are in ${data["city"]}, ${data['country']}`)
+            return data['country']
+        })
+        .then(country=>getCountryData(country))
+        .catch(err=>console.error(`oh shit, ${err.message}`))
+
+
+}
+
+const lat = 52.508;
+const lng = 13.381;
+
+const country = whereAmI(lat,lng);
+// console.log('--->',country)
+// getCountryData(country)
