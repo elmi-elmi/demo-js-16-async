@@ -2,7 +2,6 @@
 
 const btn = document.querySelector(".btn-country");
 const countriesContainer = document.querySelector(".countries");
-
 ///////////////////////////////////////
 const renderContry = function (data, className = "") {
   const html = `<article class="country ${className}">
@@ -20,6 +19,7 @@ const renderContry = function (data, className = "") {
           </div>
         </article>`;
   countriesContainer.insertAdjacentHTML("beforeend", html);
+    countriesContainer.style.opacity = 1
 };
 //
 // const getCountryData = function(country){
@@ -152,7 +152,7 @@ const getCountryData = function (country) {
 
 // getCountryData("iran");
 
-
+/*
 
 
 const whereAmI = function(lat, lng){
@@ -179,3 +179,127 @@ const lng = 13.381;
 const country = whereAmI(lat,lng);
 // console.log('--->',country)
 // getCountryData(country)
+*/
+
+/*
+console.log('Test start (call stack)');
+setTimeout(()=>console.log('0 seconde time (callback queue priority)'),0);
+Promise.resolve('Resolve promise 1 (microtask queue priority)').then(res=>console.log(res))
+Promise.resolve('Resolve promise 2 (microtask queue priority)').then(res=>console.log(res))
+Promise.resolve('Resolve promise 3 (microtask queue priority)').then(res=>console.log(res))
+Promise.resolve('Resolve promise 4 (microtask queue priority)').then(res=>console.log(res))
+Promise.resolve('Resolve promise 5 (microtask queue priority)').then(res=>console.log(res))
+Promise.resolve('Resolve promise 6 (microtask queue priority)').then(res=>console.log(res))
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+console.log('Test end (call stack)');
+for(let i=1; i<1000; i++){
+    console.log('')
+}
+
+ */
+/*
+const lottery = new Promise(function (resolve, reject) {
+  console.log("lottery draw is happening");
+  setTimeout(() => {
+    if (Math.random() > 0.5) {
+      resolve("You win ....");
+    } else {
+      reject(new Error("fuck You lost"));
+    }
+  }, 1000);
+});
+
+lottery
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+const wait = function (seconds) {
+  return new Promise((resolve) => setTimeout(resolve, seconds*1000));
+};
+
+wait(1)
+  .then(()=> {
+      console.log("1 seconds passed")
+      return wait(1)
+  })
+  .then(()=> {
+      console.log("2 seconds passed")
+      return wait(1)
+  })
+  .then(()=> {
+      console.log("3 seconds passed")
+      return wait(1)
+  })
+  .then(()=> {
+      console.log("4 seconds passed")
+  });
+
+
+ */
+/*
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+getPosition().then(res=>console.log(res)).catch(err=>console.error(err.message))
+
+const whereAmI = function () {
+  getPosition()
+    .then((pos) => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      return fetch(`https://geocode.xyz/${lat},${lng}?json=1 `);
+    })
+    .then((res) => {
+      if (res.status === 403)
+        throw new Error(`Too many request pedasag, ${res.status}  .`);
+      return res.json();
+    })
+    .then((data) => {
+      console.log(`You are in ${data["city"]}, ${data["country"]}`);
+      return data["country"];
+    })
+    .then((country) => getCountryData(country))
+    .catch((err) => console.error(`oh shit, ${err.message}`));
+};
+
+ */
+
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+// getJson(`https://restcountries.com/v2/name/${country}`)
+//
+// return fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
+
+const whereAmI = async function () {
+
+    const pos =  await getPosition();
+    console.log(pos)
+    const {latitude:lat,longitude:lng} = pos.coords;
+    console.log(lat,lng)
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
+    const dataGeo = await resGeo.json()
+    console.log(dataGeo)
+    const country = dataGeo['country'];
+    const resCountryData = await fetch(`https://restcountries.com/v2/name/${country}`)
+    const dataCountry = await resCountryData.json();
+    renderContry(dataCountry[0])
+
+
+};
+
+btn.addEventListener("click", whereAmI);
