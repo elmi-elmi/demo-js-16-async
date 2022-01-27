@@ -19,7 +19,7 @@ const renderContry = function (data, className = "") {
           </div>
         </article>`;
   countriesContainer.insertAdjacentHTML("beforeend", html);
-    countriesContainer.style.opacity = 1
+  countriesContainer.style.opacity = 1;
 };
 //
 // const getCountryData = function(country){
@@ -286,20 +286,51 @@ const getPosition = function () {
 // return fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
 
 const whereAmI = async function () {
-
-    const pos =  await getPosition();
-    console.log(pos)
-    const {latitude:lat,longitude:lng} = pos.coords;
-    console.log(lat,lng)
-    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
-    const dataGeo = await resGeo.json()
-    console.log(dataGeo)
-    const country = dataGeo['country'];
-    const resCountryData = await fetch(`https://restcountries.com/v2/name/${country}`)
+  try {
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?json=1 `);
+    console.log(resGeo);
+    if (!resGeo.ok)
+      throw new Error(`Too many request, status: ${resGeo.status} `);
+    const dataGeo = await resGeo.json();
+    const country = dataGeo["country"];
+    const resCountryData = await fetch(
+      `https://restcountries.com/v2/name/${country}`
+    );
+    if (!resCountryData.ok)
+      throw new Error(`Geo location not found, status: ${resGeo.status} `);
     const dataCountry = await resCountryData.json();
-    renderContry(dataCountry[0])
+    renderContry(dataCountry[0]);
+    return `You in ${country}`;
+  } catch (err) {
+    console.log(err.message);
+    renderError("-----error render------");
+    throw err;
+  }
+};
 
+// btn.addEventListener("click", whereAmI);
+// whereAmI().then(city=>console.log(city)).catch(err=>console.log('hhhhhhh'+err.message))
+
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(city);
+  } catch (err) {
+    console.log("hhhhhhh" + err.message);
+  }
+})();
+
+const getCountriesData = async function (c1, c2, c3) {
+  const data = await Promise.all([
+    getJson(`https://restcountries.com/v2/name/${c1}`),
+    getJson(`https://restcountries.com/v2/name/${c2}`),
+    getJson(`https://restcountries.com/v2/name/${c3}`),
+  ]);
+
+  console.log(data.map(d=>d[0].capital))
 
 };
 
-btn.addEventListener("click", whereAmI);
+getCountriesData('iran','germany','canada')
