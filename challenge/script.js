@@ -21,36 +21,45 @@ fetch(`https://geocode.xyz/${lat},${lng}?json=1 `)
 
 // challenge 2
 
+const createImg = function (path) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement("img");
+    img.src = path;
+    img.addEventListener("load", function () {
+      document.body.append(img);
+      console.log(img);
+      resolve(img);
+    });
+    img.addEventListener("error", function () {
+      reject(new Error("something wrong"));
+    });
+  });
+};
 
-const createImg = function(path){
-    return new Promise(function(resolve, reject){
-        const imgElement = document.createElement('img');
-        imgElement.src = path;
-        imgElement.addEventListener('load', function(){
-            console.log('img----1')
-            document.body.append(imgElement)
-            resolve(imgElement)
-        })
-        imgElement.addEventListener('error',function(){
-            reject(new Error('something wrong'))
-        })
-    }).then(el=> {
-        console.log('el----', el)
-        document.body.insertAdjacentElement('afterbegin', el)
+const wait = function (seconds) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(resolve(`${seconds}seconds passed`), seconds * 1000);
+  });
+};
 
-    })
-}
+// createImg('../img/img-1.jpg').then(()=>{
+//     console.log('image 1 loaded.')
+//     return wait(1)
+// }).then(()=>createImg('../img/img-2.jpg'))
+//
+// // wait(1).then(res=>console.log(res))
 
+// Challenge 3
 
-const wait = function(seconds){
-    return new Promise(function(resolve,reject){
-        setTimeout(resolve(`${seconds}seconds passed`),seconds*1000)
-    })
-}
+const imgPathArr = ["../img/img-1.jpg", "../img/img-2.jpg", "../img/img-3.jpg"];
 
-createImg('../img/img-1.jpg').then(()=>{
-    console.log('image 1 loaded.')
-    return wait(1)
-}).then(()=>createImg('../img/img-2.jpg'))
+const loadAll = async function (imgArr) {
+  // const imgsWithMap = imgArr.map(async (path) => await createImg(path));
+  //   const imgsWithMap = await imgArr.map( (path) =>  createImg(path));
+    const imgsWithMap =  imgArr.map( (path) =>  createImg(path));
+    console.log(await imgsWithMap)
+  const imgs = await Promise.all(imgsWithMap);
+  console.log(imgs);
+};
 
-// wait(1).then(res=>console.log(res))
+loadAll(imgPathArr);
