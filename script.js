@@ -312,7 +312,7 @@ const whereAmI = async function () {
 
 // btn.addEventListener("click", whereAmI);
 // whereAmI().then(city=>console.log(city)).catch(err=>console.log('hhhhhhh'+err.message))
-
+/*
 (async function () {
   try {
     const city = await whereAmI();
@@ -334,3 +334,60 @@ const getCountriesData = async function (c1, c2, c3) {
 };
 
 getCountriesData('iran','germany','canada')
+
+ */
+
+// (async function(){
+//   const data = await Promise.race([
+//     getJson(`https://restcountries.com/v2/name/iran`),
+//     getJson(`https://restcountries.com/v2/name/canada`),
+//     getJson(`https://restcountries.com/v2/name/mexico`),
+//   ])
+//   console.log(data)
+// })();
+
+Promise.race([
+  Promise.resolve("race fastest response fulfill (and return one response)"),
+  Promise.reject("Error"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+Promise.race([
+  Promise.reject(new Error("race fastest response reject")),
+  Promise.resolve("Success"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+Promise.allSettled([
+  Promise.reject("allSettled fastest response reject"),
+  Promise.resolve("allSettled second response fulfilled"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+Promise.allSettled([
+  Promise.resolve("allSettled fastest response fulfilled"),
+  Promise.reject("allSettled second response rejected"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+Promise.any([
+  Promise.resolve(
+    "any fastest response fulfilled (and return first fulfilled response)"
+  ),
+  Promise.reject("avy second response reject"),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
+
+Promise.any([
+  Promise.reject("any fastest response rejected"),
+  Promise.resolve(
+    "first fulfill response is second response(return first fulfilled response)"
+  ),
+])
+  .then((res) => console.log(res))
+  .catch((err) => console.error(err.message));
